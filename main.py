@@ -1,17 +1,20 @@
 from datetime import datetime
+from dotenv import load_dotenv
 import os
 import pandas as pd
 from pathlib import Path
 import pdfplumber
+import ssl
+import smtplib
+from email.message import EmailMessage
 
-
-DATE =  datetime.now().strftime(format="%d%m%Y")
-
-
+load_dotenv()
 
 BASE_DIR = Path(__file__).parent
 INPUT_DIR = BASE_DIR / 'input'
 OUTPUT_DIR = BASE_DIR / 'output'
+
+DATE =  datetime.now().strftime(format="%d%m%Y")
 
 os.makedirs(INPUT_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
