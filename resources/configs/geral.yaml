@@ -1,0 +1,14 @@
+COLUNAS_NUMERICAS:
+  COLUMN_1: Qtd
+  COLUMN_2: Valor unit. (R$)
+  COLUMN_3: Valor total (R$)
+
+ARQUIVO_FINAL: relatorio_pedido
+
+SHEETS:
+  SHEET_1: Tabela de Itens
+  SHEET_2: Valores Finais
+
+DIRETORIOS:
+  INPUT: input 
+  OUTPUT: output

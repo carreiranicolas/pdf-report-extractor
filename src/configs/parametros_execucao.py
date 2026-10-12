@@ -1,0 +1,48 @@
+import os
+from dotenv import load_dotenv
+
+from src.models.parametros_execucao import ParametrosExecucaoModel
+
+
+class ParametrosExecucao:
+    def __init__(self):
+        """Inicializa a classe, carregando as variáveis de ambiente a partir do arquivo `.env`."""
+
+        load_dotenv()
+
+    def obter_parametros_execucao(self):
+        """Obtém os valores da variavel ambiente e instancia ParametrosExecucaoModel"""
+
+        return ParametrosExecucaoModel(
+            remetente=self.__obter_variavel_ambiente("FROM_EMAIL"),
+            destinatario=self.__obter_variavel_ambiente("TO_EMAIL"),
+            app_password=self.__obter_variavel_ambiente("APP_EMAIL_PASSWORD")
+        )
+
+    def __obter_variavel_ambiente(self, nome_variavel: str, padrao: str = None) -> str:
+        """
+        Recupera o valor de uma variável de ambiente.
+        
+        Args:
+            nome_variavel (str): O nome da variável de ambiente.
+            padrao (str, opcional): O valor padrão a ser retornado caso a variável não esteja definida
+        
+        Returns:
+            str: O valor da variável de ambiente ou o valor padrão, se não estiver definida.
+        
+        Raises:
+            ValueError: Se a variável de ambiente não estiver definida e nenhum valor padrão for fornecida
+        
+        """
+
+        valor = os.getenv(nome_variavel, padrao)
+
+        if valor is None:
+            raise ValueError(f"A varíavel de ambiente {nome_variavel} não está definida")
+
+        return valor
+
+
+PARAMETROS_EXECUCAO = ParametrosExecucao().obter_parametros_execucao()
+
+    
