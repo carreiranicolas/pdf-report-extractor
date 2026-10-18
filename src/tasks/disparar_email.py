@@ -5,6 +5,9 @@ import ssl
 from email.message import EmailMessage
 from src.configs.parametros import PARAMETROS
 from src.configs.parametros_execucao import PARAMETROS_EXECUCAO
+from src.utils.logger import obter_logger
+
+logger = obter_logger(__name__)
 
 
 def disparar_email(titulo: str, mensagem: str):
@@ -13,7 +16,10 @@ def disparar_email(titulo: str, mensagem: str):
     
     Args:
         titulo (str): O titulo do email.
-        mensagem: A mensagem inserida no email
+        mensagem (str): A mensagem inserida no email
+
+    Raises:
+        RuntimeError: Se ocorrer uma falha na comunicação com o servidor SMTP
     
     """
 
@@ -45,6 +51,8 @@ def disparar_email(titulo: str, mensagem: str):
 
     context = ssl.create_default_context()
 
+    logger.info(f"Enviando e-mail para {PARAMETROS_EXECUCAO.destinatario}")
+
     try:
         with smtplib.SMTP_SSL(
             "smtp.gmail.com",
@@ -55,8 +63,7 @@ def disparar_email(titulo: str, mensagem: str):
             server.login(PARAMETROS_EXECUCAO.remetente, PARAMETROS_EXECUCAO.app_password)
             server.send_message(msg)
 
-        print("E-mail enviado com sucesso!")
+    except smtplib.SMTPException as error:
+        raise RuntimeError(f"Falha ao enviar o e-mail para {PARAMETROS_EXECUCAO.destinatario}") from error
 
-    except Exception as e:
-        print(f"Falha ao enviar o e-mail {type(e)}: {e}")
-        
+    logger.info("E-mail enviado com sucesso!")

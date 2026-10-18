@@ -2,6 +2,9 @@ import os
 from dotenv import load_dotenv
 
 from src.models.parametros_execucao import ParametrosExecucaoModel
+from src.utils.logger import obter_logger
+
+logger = obter_logger(__name__)
 
 
 class ParametrosExecucao:
@@ -43,6 +46,9 @@ class ParametrosExecucao:
         return valor
 
 
-PARAMETROS_EXECUCAO = ParametrosExecucao().obter_parametros_execucao()
-
-    
+# Mesmo motivo de PARAMETROS: o carregamento acontece na importação, então o erro é registrado aqui.
+try:
+    PARAMETROS_EXECUCAO = ParametrosExecucao().obter_parametros_execucao()
+except Exception:
+    logger.exception("Erro ao carregar as variáveis de ambiente do arquivo .env")
+    raise

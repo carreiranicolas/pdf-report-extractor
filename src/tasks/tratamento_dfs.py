@@ -2,6 +2,9 @@ import pandas as pd
 
 from src.configs.parametros import PARAMETROS
 from src.utils.formatar_numerais import formatar_numerais
+from src.utils.logger import obter_logger
+
+logger = obter_logger(__name__)
 
 def converter_para_numeral(df: pd.DataFrame):
     """
@@ -15,7 +18,7 @@ def converter_para_numeral(df: pd.DataFrame):
     """
 
     df = df.copy()
-    print("Convertendo colunas do df para numeral")
+    logger.info("Convertendo colunas do df para numeral")
     for coluna in PARAMETROS.colunas_numericas:
         df[coluna.nome] = pd.to_numeric(df[coluna.nome].map(formatar_numerais), errors='coerce')
 
@@ -32,7 +35,7 @@ def tratamento_dfs(df: pd.DataFrame):
         DataFrame: retorna o DataFrame tratado
     
     """
-    print("Iniciando tratamento do df extraido")
+    logger.info("Iniciando tratamento do df extraído")
     df_numeral_convertido = converter_para_numeral(df)
 
     return df_numeral_convertido

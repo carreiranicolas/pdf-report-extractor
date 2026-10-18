@@ -1,3 +1,5 @@
+import sys
+
 import pandas as pd
 
 from src.configs.parametros import PARAMETROS
@@ -5,6 +7,9 @@ from src.files.extrair_dados_pdf import extrair_dados_pdf
 from src.tasks.carregar_diretorios import carregar_diretorios
 from src.tasks.disparar_email import disparar_email
 from src.tasks.tratamento_dfs import tratamento_dfs
+from src.utils.logger import obter_logger
+
+logger = obter_logger(__name__)
 
 
 def main():
@@ -30,8 +35,10 @@ def main():
 
     with pd.ExcelWriter(PARAMETROS.arquivo.caminho) as writer:
 
-        df_valores.to_excel(writer, sheet_name=PARAMETROS.sheets.tabela_itens, index=False)
-        df_tratado.to_excel(writer, sheet_name=PARAMETROS.sheets.valores_finais, index=False)
+        df_valores.to_excel(writer, sheet_name=PARAMETROS.sheets.valores_finais, index=False)
+        df_tratado.to_excel(writer, sheet_name=PARAMETROS.sheets.tabela_itens, index=False)
+
+    logger.info(f"Arquivo Excel gerado em {PARAMETROS.arquivo.caminho}")
 
 
     # Disparo do email
@@ -39,7 +46,10 @@ def main():
     disparar_email("Teste", "Email de teste")
 
 if __name__ == "__main__":
+    logger.info("Início da execução")
     try:
         main()
-    except Exception as error:
-        print(f"Erro {type(error)}: {error}")
+    except Exception:
+        logger.exception("Execução interrompida por erro")
+        sys.exit(1)
+    logger.info("Execução finalizada com sucesso")

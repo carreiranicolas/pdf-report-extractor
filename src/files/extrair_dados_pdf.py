@@ -1,39 +1,39 @@
 import os
 import pandas as pd
-from pathlib import PosixPath
+from pathlib import Path
 import pdfplumber
 
 from src.configs.parametros import PARAMETROS
+from src.utils.logger import obter_logger
+
+logger = obter_logger(__name__)
 
 def quantidade_arquivos_diretorio() -> int:
 
     """
     Obtém a quantidade de arquivos .pdf que tem no diretório de input
-    
+
     Returns:
         int: quantidade de arquivos .pdf que tem no diretório de input
 
     """
-    try:
-        return len([
-            arquivo for arquivo in os.listdir(PARAMETROS.diretorios.input)
-            if os.path.isfile(os.path.join(PARAMETROS.diretorios.input, arquivo)) and ".pdf" in arquivo
-        ])
-    except Exception as error:
-        print(f"Não foi possível obter a quantidade de arquivos .pdf {type(error)}: {error}")
+    return len([
+        arquivo for arquivo in os.listdir(PARAMETROS.diretorios.input)
+        if os.path.isfile(os.path.join(PARAMETROS.diretorios.input, arquivo)) and ".pdf" in arquivo
+    ])
 
-def encontrar_pdf() -> PosixPath:
+def encontrar_pdf() -> Path:
     """
     Encontra o .pdf dentro do diretório de input
 
     Returns:
-        PosixPath: O path do arquivo .pdf no diretório de input
-    
+        Path: O path do arquivo .pdf no diretório de input
+
     Raises:
         ValueError: Se não for encontrado o .pdf ou se forem encontrados mais de um
-    
+
     """
-    
+
     if quantidade_arquivos_diretorio() > 1:
         raise ValueError("Mais de um pdf na pasta de input")
 
@@ -47,28 +47,30 @@ def encontrar_pdf() -> PosixPath:
 def extrair_dados_pdf() -> list[pd.DataFrame]:
     """
     Extrai os dados do pdf e os transforma em DFs.
-    
+
     Returns:
         list[DataFrame]: Uma lista com todos os dataframes montados a partir da extração
-    
-    Raises:
-        ValueError: Se a variável de ambiente não estiver definida e nenhum valor padrão for fornecida
-    
-    """
-    print("Iniciando a extração de dados do .pdf")
-    path_pdf = encontrar_pdf()
-    lista_dfs = []
-    try:
-        with pdfplumber.open(path_pdf) as pdf:
-            for page in pdf.pages:
-                table = page.extract_table()
 
-                if table:
-                    df = pd.DataFrame(table[1:], columns=table[0])
-                    lista_dfs.append(df)
-                else:
-                    print(f"Nenhuma tabela encontrada para a página {page.page_number}")
-        print("Extração finaliza.")
-    except Exception as error:
-        print(f"Não foi possível extrair os dados do pdf: {type(error)}: {error}")
+    Raises:
+        ValueError: Se o pdf não for encontrado ou se nenhuma tabela for encontrada nele
+
+    """
+    path_pdf = encontrar_pdf()
+    logger.info(f"Iniciando a extração de dados do pdf {path_pdf.name}")
+    lista_dfs = []
+
+    with pdfplumber.open(path_pdf) as pdf:
+        for page in pdf.pages:
+            table = page.extract_table()
+
+            if table:
+                df = pd.DataFrame(table[1:], columns=table[0])
+                lista_dfs.append(df)
+            else:
+                logger.warning(f"Nenhuma tabela encontrada na página {page.page_number}")
+
+    if not lista_dfs:
+        raise ValueError(f"Nenhuma tabela encontrada no pdf {path_pdf.name}")
+
+    logger.info(f"Extração finalizada: {len(lista_dfs)} tabela(s) encontrada(s)")
     return lista_dfs

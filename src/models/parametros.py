@@ -1,4 +1,4 @@
-from pathlib import PosixPath
+from pathlib import Path
 from pydantic.dataclasses import dataclass
 
 
@@ -11,13 +11,13 @@ class ColunasNumericasModel:
 @dataclass
 class DiretoriosModel:
     """Modelo referente aos caminhos de input e output dos diretorios"""
-    input: PosixPath
-    output: PosixPath
+    input: Path
+    output: Path
 
 @dataclass
 class ArquivoModel:
     """Modelo referente ao caminho do arquivo final"""
-    caminho: PosixPath
+    caminho: Path
 
 @dataclass
 class SheetModel:

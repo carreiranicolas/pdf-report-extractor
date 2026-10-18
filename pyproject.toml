@@ -1,0 +1,14 @@
+[project]
+name = "pdf-report-extractor"
+version = "0.1.0"
+description = "Extrai as tabelas de um pdf, gera um relatório .xlsx e o envia por e-mail"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.6",
+    "pdfplumber>=0.11.10",
+    "pydantic>=2.14.1",
+    "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
+]
